@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Comparateur achat immobilier | Ancien vs Neuf avec PTZ</title>
+<meta name="description" content="Estimez votre budget immobilier dans l'ancien et dans le neuf, avec ou sans PTZ. Simulateur gratuit, immédiat et sans engagement.">
+<meta property="og:title" content="Simulateur d'achat immobilier : Ancien vs Neuf avec PTZ">
+<meta property="og:description" content="Découvrez en 2 minutes votre budget maximum dans l'ancien et dans le neuf, PTZ inclus.">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+:root{--bg:#f7f9fc;--card:#fff;--text:#0f172a;--muted:#5b6678;--primary:#1d4ed8;--primary-d:#1e3a8a;--accent:#f59e0b;--ok:#059669;--warn:#dc2626;--line:#e2e8f0;--radius:16px}
+@media (prefers-color-scheme:dark){:root{--bg:#0b1220;--card:#121b2e;--text:#e8edf6;--muted:#9aa7bd;--primary:#60a5fa;--primary-d:#93c5fd;--line:#24314a}}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+.wrap{max-width:1100px;margin:auto;padding:0 20px}
+header{position:sticky;top:0;z-index:10;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(8px);border-bottom:1px solid var(--line)}
+.nav{display:flex;align-items:center;justify-content:space-between;height:64px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:800;text-decoration:none;color:var(--text);font-size:1.05rem}
+.nav a.btn-sm{background:var(--primary);color:#fff;padding:8px 16px;border-radius:999px;text-decoration:none;font-weight:600;font-size:.9rem}
+.hero{padding:60px 0 40px;text-align:center}
+.hero h1{font-size:clamp(2rem,5vw,3.4rem);line-height:1.15;font-weight:800;letter-spacing:-.02em}
+.hero h1 span{color:var(--primary)}
+.hero p{max-width:640px;margin:18px auto 28px;color:var(--muted);font-size:1.1rem}
+.btn{display:inline-block;border:0;cursor:pointer;background:var(--primary);color:#fff;padding:14px 28px;border-radius:12px;font:700 1rem 'Inter',sans-serif;text-decoration:none;transition:.2s}
+.btn:hover{background:var(--primary-d);color:#fff;transform:translateY(-1px)}
+.btn-outline{background:transparent;border:1px solid var(--line);color:var(--text);padding:8px 16px;font-size:.85rem}
+.btn-outline:hover{background:var(--line);color:var(--text)}
+section{padding:40px 0}
+h2{font-size:1.9rem;font-weight:800;text-align:center}
+.sub{text-align:center;color:var(--muted);margin:8px auto 32px;max-width:600px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:24px}
+.card h3{font-size:1.05rem;margin-bottom:6px}
+.card p{color:var(--muted);font-size:.95rem}
+.sim{display:grid;grid-template-columns:420px 1fr;gap:24px;align-items:start}
+@media(max-width:900px){.sim{grid-template-columns:1fr}}
+label{display:block;font-size:.85rem;font-weight:600;margin:14px 0 4px}
+input[type=number],input[type=text],input[type=email],input[type=tel],select{width:100%;padding:11px 12px;border:1px solid var(--line);border-radius:10px;background:var(--bg);color:var(--text);font:inherit}
+input:focus,select:focus{outline:2px solid var(--primary);border-color:transparent}
+input[readonly]{cursor:not-allowed;background:var(--line);font-weight:700}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:560px){.cols{grid-template-columns:1fr}}
+.res{border-radius:14px;padding:18px;border:2px solid var(--line)}
+.res h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.big{font-size:2rem;font-weight:800;margin:4px 0}
+.verdict{margin-top:16px;padding:14px 16px;border-radius:12px;background:color-mix(in srgb,var(--ok) 14%,transparent);font-weight:600;border:1px solid color-mix(in srgb,var(--ok) 30%,transparent)}
+.note{font-size:.78rem;color:var(--muted);margin-top:12px}
+.budget-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+@media(max-width:560px){.budget-grid{grid-template-columns:1fr}}
+.budget-card{border-radius:14px;padding:20px;border:2px solid var(--line);text-align:center}
+.budget-card.ancien{border-color:#94a3b8;background:color-mix(in srgb,#94a3b8 8%,transparent)}
+.budget-card.neuf{border-color:var(--primary);background:color-mix(in srgb,var(--primary) 8%,transparent)}
+.budget-card h3{font-size:.8rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:4px}
+.budget-card .amount{font-size:2.2rem;font-weight:800;line-height:1.2}
+.budget-card .detail{font-size:.82rem;color:var(--muted);margin-top:8px;line-height:1.5}
+.budget-card .ptz-badge{display:inline-block;background:var(--ok);color:#fff;padding:2px 10px;border-radius:999px;font-size:.72rem;font-weight:700;margin-top:8px}
+.budget-card .no-ptz{display:inline-block;background:#94a3b8;color:#fff;padding:2px 10px;border-radius:999px;font-size:.72rem;font-weight:700;margin-top:8px}
+.alert{padding:12px 16px;border-radius:10px;font-size:.85rem;margin-top:12px}
+.alert.warn{background:color-mix(in srgb,var(--warn) 10%,transparent);border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);color:var(--warn)}
+.alert.ok{background:color-mix(in srgb,var(--ok) 10%,transparent);border:1px solid color-mix(in srgb,var(--ok) 30%,transparent);color:var(--ok)}
+.lead{background:linear-gradient(135deg,var(--primary-d),var(--primary));color:#fff;border-radius:24px;padding:40px}
+.lead h2,.lead .sub{color:#fff}.lead .sub{opacity:.9}
+.lead form{max-width:560px;margin:auto}
+.lead label{color:#fff}
+.lead input{background:#fff;color:#0f172a}
+.lead .radio-group{display:flex;gap:15px;margin-bottom:15px;font-size:.9rem;color:#fff}
+.lead .radio-group label{display:flex;align-items:center;gap:5px;margin:0;cursor:pointer}
+.check{display:flex;gap:10px;align-items:flex-start;font-size:.8rem;margin-top:16px;font-weight:400}
+.check input{width:auto;margin-top:3px}
+.lead .btn{background:var(--accent);color:#1f1300;width:100%;margin-top:20px}
+#msg{margin-top:14px;text-align:center;font-weight:600}
+details.expert{background:color-mix(in srgb,var(--line) 30%,transparent);border:1px solid var(--line);border-radius:10px;padding:10px 14px;margin-top:14px;font-size:.85rem}
+details.expert summary{cursor:pointer;font-weight:600;color:var(--muted)}
+footer{padding:32px 0;text-align:center;color:var(--muted);font-size:.8rem;border-top:1px solid var(--line);margin-top:32px}
+.toggle-ptz{display:flex;align-items:center;gap:10px;margin:16px 0;padding:12px;background:color-mix(in srgb,var(--primary) 6%,transparent);border-radius:10px;border:1px solid var(--line)}
+.toggle-ptz input{width:auto;transform:scale(1.2)}
+.toggle-ptz label{margin:0;font-size:.9rem}
+.slider-container{display:flex;align-items:center;gap:10px}
+input[type=range]{flex-grow:1;accent-color:var(--primary);height:6px}
+.val-display{font-weight:700;min-width:90px;text-align:right;font-size:.95rem}
+.tooltip{position:relative;display:inline-block;cursor:pointer;margin-left:4px;color:var(--primary)}
+.tooltip .tooltiptext{visibility:hidden;width:220px;background-color:#0f172a;color:#fff;text-align:center;border-radius:8px;padding:8px;position:absolute;z-index:10;bottom:125%;left:50%;margin-left:-110px;opacity:0;transition:opacity .2s;font-size:.75rem;font-weight:400;line-height:1.4;box-shadow:0 4px 6px rgba(0,0,0,0.1)}
+.tooltip:hover .tooltiptext{visibility:visible;opacity:1}
+.tooltip .tooltiptext::after{content:"";position:absolute;top:100%;left:50%;margin-left:-5px;border-width:5px;border-style:solid;border-color:#0f172a transparent transparent transparent}
+.sticky-bar{position:fixed;bottom:-100px;left:0;right:0;background:var(--primary);color:#fff;padding:16px 20px;display:flex;justify-content:center;align-items:center;gap:20px;z-index:100;box-shadow:0 -4px 12px rgba(0,0,0,0.15);transition:bottom .3s ease;flex-wrap:wrap;text-align:center}
+.sticky-bar.show{bottom:0}
+.sticky-bar .btn{background:var(--accent);color:#1f1300;padding:10px 20px;border-radius:999px;font-size:.9rem}
+.sticky-bar span{font-weight:600;font-size:1rem}
+dialog{border:none;border-radius:12px;padding:24px;max-width:600px;box-shadow:0 10px 25px rgba(0,0,0,0.5);background:var(--card);color:var(--text);margin:auto}
+dialog::backdrop{background:rgba(0,0,0,0.6)}
+dialog h2{text-align:left;margin-bottom:16px;font-size:1.4rem}
+dialog p{font-size:.9rem;color:var(--muted);margin-bottom:12px}
+.close-modal{background:var(--line);color:var(--text);padding:8px 16px;border:none;border-radius:8px;cursor:pointer;font-weight:600;margin-top:16px}
+.social-proof{display:flex;justify-content:center;gap:20px;align-items:center;opacity:0.6;margin-top:20px;flex-wrap:wrap}
+.social-proof i{font-size:1.5rem}
+.social-proof span{font-weight:700;font-size:1.1rem}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="wrap nav">
+    <a class="logo" href="#"><i class="fa-solid fa-house-chimney" style="color:var(--primary)"></i> Comparateur immobilier</a>
+    <a class="btn-sm" href="#comparaison-fixe">Simuler mon budget</a>
+  </div>
+</header>
+
+<main>
+<div class="wrap">
+  <div class="hero">
+    <h1>Ancien ou neuf ?<br><span>Découvrez votre budget réel</span> avec le PTZ</h1>
+    <p>Renseignez votre situation et découvrez combien vous pouvez emprunter dans l'ancien et dans le neuf, prêt à taux zéro inclus.</p>
+    
+    <a class="btn" href="#comparaison-fixe" style="margin-top:20px">Calculer mon budget <i class="fa-solid fa-arrow-right"></i></a>
+    
+    <div class="social-proof">
+      <div><i class="fa-brands fa-google"></i> <span>4.8/5</span> sur Google</div>
+      <div><i class="fa-solid fa-shield-halved"></i> Données sécurisées</div>
+    </div>
+    <p style="font-size:.75rem;color:var(--muted);margin-top:15px"><i class="fa-solid fa-rotate"></i> Taux et barèmes mis à jour en Octobre 2026</p>
+  </div>
+</div>
+<!-- SECTION 1 : COMPARAISON POUR UN MONTANT FIXE -->
+<section id="comparaison-fixe" style="background:color-mix(in srgb, var(--primary) 3%, var(--bg));"><div class="wrap">
+  <h2><i class="fa-solid fa-scale-balanced" style="color:var(--primary)"></i> J'ai un prix en tête</h2>
+  <p class="sub">Saisissez le prix du bien que vous visez pour découvrir le financement nécessaire et les mensualités dans les deux scénarios.</p>
+  
+  <div class="card" style="max-width:500px;margin:0 auto 30px;text-align:center;">
+    <label for="prixFixe" style="font-size:1rem;margin-bottom:8px;">Prix du bien souhaité (€)</label>
+    <input type="text" inputmode="numeric" id="prixFixe" value="250 000" oninput="formatNum(this)" style="font-size:1.8rem;font-weight:800;text-align:center;color:var(--primary);padding:15px;">
+  </div>
+
+  <div class="budget-grid" style="max-width:900px;margin:0 auto;">
+    <div class="budget-card ancien" style="text-align:left;">
+      <h3 style="text-align:center;margin-bottom:15px;"><i class="fa-solid fa-house-chimney-window"></i> Financement dans l'ancien</h3>
+      <div class="amount" id="fixeMensA" style="text-align:center;margin-bottom:5px;">–</div>
+      <div class="note" style="text-align:center;margin-top:0;margin-bottom:15px;">par mois (crédit + assurance)</div>
+      <div class="detail" id="fixeDetailA" style="text-align:left;background:var(--card);padding:15px;border-radius:10px;">–</div>
+    </div>
+    <div class="budget-card neuf" style="text-align:left;">
+      <h3 style="text-align:center;margin-bottom:15px;"><i class="fa-solid fa-building"></i> Financement dans le neuf</h3>
+      <div class="amount" id="fixeMensN" style="text-align:center;margin-bottom:5px;color:var(--ok)">–</div>
+      <div class="note" style="text-align:center;margin-top:0;margin-bottom:15px;">par mois (crédit + PTZ lissé)</div>
+      <div class="detail" id="fixeDetailN" style="text-align:left;background:var(--card);padding:15px;border-radius:10px;">–</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- SECTION 2 : SIMULATEUR PRINCIPAL -->
+<section id="simulateur"><div class="wrap">
+  <h2>Votre budget immobilier : ancien vs neuf</h2>
+  <p class="sub">Remplissez votre situation. Le simulateur calcule votre budget maximum et le PTZ auquel vous avez droit.</p>
+  
+  <div style="text-align:right;max-width:1100px;margin:0 auto 10px;">
+    <button class="btn-outline" onclick="resetSim()"><i class="fa-solid fa-arrow-rotate-left"></i> Réinitialiser</button>
+  </div>
+
+  <div class="sim">
+    <div class="card">
+      <h3 style="margin-bottom:12px"><i class="fa-solid fa-clipboard-list"></i> Votre situation</h3>
+      
+      <div>
+        <label for="apportRange">Apport personnel : <span id="apportDisplay" class="val-display">20 000 €</span></label>
+        <div class="slider-container">
+          <input type="range" id="apportRange" min="0" max="150000" step="1000" value="20000">
+          <input type="hidden" id="apport" value="20000">
+        </div>
+      </div>
+
+      <div>
+        <label for="dureeRange">Durée souhaitée : <span id="dureeDisplay" class="val-display">25 ans</span></label>
+        <div class="slider-container">
+          <input type="range" id="dureeRange" min="10" max="30" step="1" value="25">
+          <input type="hidden" id="duree" value="25">
+        </div>
+      </div>
+
+      <div class="row2" style="margin-top:14px">
+        <div>
+          <label for="revenusMensuels">Revenus nets mensuels (€)</label>
+          <input type="text" inputmode="numeric" id="revenusMensuels" value="3 500" oninput="formatNum(this)">
+        </div>
+        <div><label>Assurance (%/an)</label><input type="text" value="0,30 %" readonly></div>
+      </div>
+
+      <details class="expert">
+        <summary><i class="fa-solid fa-sliders"></i> Paramètres avancés</summary>
+        <div class="row2" style="margin-top:10px">
+          <div>
+            <label for="rfr">Revenu fiscal (N-2) 
+              <span class="tooltip"><i class="fa-solid fa-circle-info"></i>
+                <span class="tooltiptext">Montant annuel inscrit sur votre avis d'imposition (case RFR).</span>
+              </span>
+            </label>
+            <input type="text" inputmode="numeric" id="rfr" value="45 000" oninput="formatNum(this)">
+          </div>
+          <div>
+            <label for="nbPers">Personnes dans le foyer</label>
+            <select id="nbPers">
+              <option value="1">1 personne</option>
+              <option value="2" selected>2 personnes</option>
+              <option value="3">3 personnes</option>
+              <option value="4">4 personnes</option>
+              <option value="5">5 personnes</option>
+              <option value="6">6 personnes</option>
+              <option value="7">7 personnes</option>
+              <option value="8">8 personnes et +</option>
+            </select>
+          </div>
+        </div>
+        <div class="row2">
+          <div>
+            <label for="zone">Zone du bien</label>
+            <select id="zone">
+              <option value="A">Zone A / A bis (Tendue)</option>
+              <option value="B1" selected>Zone B1</option>
+              <option value="B2">Zone B2</option>
+              <option value="C">Zone C (Rural)</option>
+            </select>
+          </div>
+          <div>
+            <label for="typeBien">Type de bien (ancien)</label>
+            <select id="typeBien">
+              <option value="appart">Appartement (7,5% notaire)</option>
+              <option value="maison">Maison (7,0% notaire)</option>
+            </select>
+          </div>
+        </div>
+      </details>
+
+      <div class="toggle-ptz">
+        <input type="checkbox" id="usePTZ" checked>
+        <label for="usePTZ">Activer le calcul du PTZ</label>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3><i class="fa-solid fa-bullseye" style="color:var(--primary)"></i> Votre budget maximum estimé</h3>
+      <div class="budget-grid">
+        <div class="budget-card ancien">
+          <h3><i class="fa-solid fa-house-chimney-window"></i> Dans l'ancien</h3>
+          <div class="amount" id="budgetAncien">–</div>
+          <div class="detail" id="detailAncien">–</div>
+          <div id="ptzAncien" class="no-ptz">Pas de PTZ</div>
+        </div>
+        <div class="budget-card neuf">
+          <h3><i class="fa-solid fa-building"></i> Dans le neuf</h3>
+          <div class="amount" id="budgetNeuf">–</div>
+          <div class="detail" id="detailNeuf">–</div>
+          <div id="ptzNeuf" class="ptz-badge">PTZ inclus</div>
+        </div>
+      </div>
+
+      <div id="alertPTZ"></div>
+      <div class="verdict" id="verdictBudget">–</div>
+
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--line)">
+        <h3 style="margin-bottom:10px"><i class="fa-solid fa-chart-pie"></i> Répartition de votre budget (Neuf)</h3>
+        <div style="height:200px;position:relative"><canvas id="chartCanvas"></canvas></div>
+      </div>
+
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--line)">
+        <h3 style="margin-bottom:10px"><i class="fa-solid fa-wallet"></i> Mensualités estimées</h3>
+        <div class="cols">
+          <div class="res"><h3>Ancien</h3><div class="big" id="mensA">–</div><span class="note">par mois</span></div>
+          <div class="res"><h3>Neuf</h3><div class="big" id="mensN">–</div><span class="note">par mois (PTZ inclus)</span></div>
+        </div>
+      </div>
+
+      <div style="margin-top:20px;padding-top:20px;border-top:1px solid var(--line)">
+        <h3 style="margin-bottom:10px"><i class="fa-solid fa-magnifying-glass"></i> Détail du PTZ</h3>
+        <div id="ptzDetail" class="note" style="line-height:1.8">–</div>
+      </div>
+
+      <a id="mainCTA" class="btn" style="margin-top:16px;display:block;text-align:center" href="#contact">Recevoir mon étude personnalisée</a>
+    </div>
+  </div>
+</div></section>
+<section id="contact"><div class="wrap">
+  <div class="lead">
+    <h2>Recevez votre étude personnalisée</h2>
+    <p class="sub">Un conseiller analyse votre budget et vous recontacte gratuitement, sans engagement.</p>
+    
+    <form id="leadForm" novalidate>
+      <input class="hp" type="text" name="website" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px">
+      
+      <label for="nom">Nom et prénom</label>
+      <input type="text" id="nom" name="nom" required>
+      
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" required>
+      
+      <div class="radio-group">
+        <span style="font-weight:600;margin-right:10px;">Comment souhaitez-vous être contacté ?</span>
+        <label><input type="radio" name="contactPref" value="email" checked onchange="toggleContact()"> Par email uniquement</label>
+        <label><input type="radio" name="contactPref" value="phone" onchange="toggleContact()"> Par téléphone</label>
+      </div>
+
+      <div id="phoneField" style="display:none">
+        <label for="tel">Téléphone</label>
+        <input type="tel" id="tel" name="tel">
+      </div>
+
+      <label class="check"><input type="checkbox" id="rgpd" required> J'accepte d'être contacté(e) au sujet de mon projet et que mes données soient traitées à cette fin.</label>
+      
+      <button class="btn" type="submit">Valider ma demande</button>
+      <div id="msg" role="status"></div>
+    </form>
+  </div>
+</div></section>
+
+<section id="faq"><div class="wrap" style="max-width:760px">
+  <h2>Questions fréquentes</h2>
+  <details><summary>Le PTZ, c'est quoi exactement ?</summary><p>C'est un prêt sans intérêts ni frais de dossier accordé par l'État pour financer une partie de votre résidence principale. Il complète un prêt bancaire classique.</p></details>
+  <details><summary>Puis-je utiliser le PTZ pour acheter dans l'ancien ?</summary><p>En zones A, A bis et B1, le PTZ classique ne finance pas l'ancien. Il est réservé au neuf. En zones B2 et C, l'ancien avec travaux peut être éligible sous conditions.</p></details>
+  <details><summary>Pourquoi mon budget baisse-t-il quand j'ajoute les frais ?</summary><p>Les banques calculent votre capacité d'emprunt sur la base de vos revenus. Les frais de notaire, de dossier et de garantie doivent être payés "cash". S'ils dépassent votre apport, ils réduisent mécaniquement le prix maximum que vous pouvez acheter.</p></details>
+  <details><summary>L'apport affiché dans le comparatif est-il suffisant ?</summary><p>L'apport indiqué est le minimum strict pour couvrir les frais de notaire, de dossier et de garantie, tout en respectant la règle des 10 % du prix dans l'ancien.</p></details>
+</div></section>
+</main>
+
+<footer><div class="wrap">© <span id="yr"></span> Comparateur achat immobilier · Simulation indicative · 
+  <a href="#" style="color:inherit;text-decoration:underline" onclick="document.getElementById('modalLegal').showModal();return false;">Mentions légales</a> · 
+  <a href="#" style="color:inherit;text-decoration:underline" onclick="document.getElementById('modalPrivacy').showModal();return false;">Confidentialité</a>
+</div></footer>
+
+<dialog id="modalLegal">
+  <h2>Mentions Légales</h2>
+  <p>Ce site est un simulateur à but informatif. Les résultats sont des estimations non contractuelles et ne constituent pas une offre de prêt immobilier.</p>
+  <p>Éditeur : [Votre Société] - [Votre Adresse] - [Votre SIRET]</p>
+  <button class="close-modal" onclick="this.closest('dialog').close()">Fermer</button>
+</dialog>
+
+<dialog id="modalPrivacy">
+  <h2>Politique de Confidentialité</h2>
+  <p>Les données collectées via le formulaire (nom, email, téléphone) sont utilisées uniquement pour vous recontacter au sujet de votre projet immobilier. Elles ne sont en aucun cas revendues à des tiers.</p>
+  <p>Conformément au RGPD, vous disposez d'un droit d'accès, de rectification et de suppression de vos données en contactant : [votre-email@domaine.com]</p>
+  <button class="close-modal" onclick="this.closest('dialog').close()">Fermer</button>
+</dialog>
+
+<div class="sticky-bar" id="stickyBar">
+  <span><i class="fa-solid fa-bolt" style="color:var(--accent)"></i> Votre budget neuf : <span id="stickyBudget">0 €</span></span>
+  <a href="#contact" class="btn">Recevoir mon étude gratuite</a>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+const eur = n => Math.round(n).toLocaleString('fr-FR') + ' €';
+const num = id => {
+  let val = $(id).value;
+  if(typeof val === 'string') val = val.replace(/\s/g, '').replace(',', '.');
+  return parseFloat(val) || 0;
+};
+
+const TAUX_ANCIEN = 4.10;
+const TAUX_NEUF = 2.50;
+const ASSURANCE = 0.30;
+const TAUX_ENDETTEMENT = 0.35;
+let NOTAIRE_ANCIEN = 0.075; 
+const NOTAIRE_NEUF = 0.025;
+const APPORT_MIN_ANCIEN = 0.10; 
+const FRAIS_DOSSIER = 1200;
+const TAUX_GARANTIE = 0.015;
+
+const FORM_ENDPOINT = "https://formspree.io/f/VOTRE_ID"; 
+
+const PLAFONDS_REVENUS = {
+  A:  {1:49000, 2:73500, 3:88200, 4:102900, 5:117600, 6:132300, 7:147000, 8:161700},
+  B1: {1:34500, 2:51750, 3:62100, 4:72450, 5:82800, 6:93150, 7:103500, 8:113850},
+  B2: {1:31500, 2:47250, 3:56700, 4:66150, 5:75600, 6:85050, 7:94500, 8:103950},
+  C:  {1:28500, 2:42750, 3:51300, 4:59850, 5:68400, 6:76950, 7:85500, 8:94050}
+};
+const COEF_FAMILIAL = {1:1.0, 2:1.5, 3:1.8, 4:2.1, 5:2.4, 6:2.7, 7:3.0, 8:3.3};
+const SEUILS_TRANCHES = {
+  A:  {t1:25000, t2:31000, t3:37000},
+  B1: {t1:21500, t2:26000, t3:30000},
+  B2: {t1:18000, t2:22500, t3:27000},
+  C:  {t1:15000, t2:19500, t3:24000}
+};
+const QUOTITES = {1:0.50, 2:0.40, 3:0.40, 4:0.20};
+const PLAFONDS_OPERATION = {
+  A:  {1:150000, 2:180000, 3:210000, 4:240000, 5:264000, 6:288000, 7:312000, 8:336000},
+  B1: {1:135000, 2:162000, 3:189000, 4:216000, 5:237600, 6:259200, 7:280800, 8:302400},
+  B2: {1:110000, 2:132000, 3:154000, 4:176000, 5:193600, 6:211200, 7:228800, 8:246400},
+  C:  {1:100000, 2:120000, 3:140000, 4:160000, 5:176000, 6:192000, 7:208000, 8:224000}
+};
+
+function formatNum(input) {
+  let val = input.value.replace(/\s/g, '').replace(/[^0-9]/g, '');
+  if(val) input.value = parseInt(val).toLocaleString('fr-FR');
+}
+
+function toggleContact() {
+  const isPhone = document.querySelector('input[name="contactPref"]:checked').value === 'phone';
+  $('phoneField').style.display = isPhone ? 'block' : 'none';
+  $('tel').required = isPhone;
+}
+
+function resetSim() {
+  $('apportRange').value = 20000; $('apport').value = 20000; $('apportDisplay').textContent = '20 000 €';
+  $('dureeRange').value = 25; $('duree').value = 25; $('dureeDisplay').textContent = '25 ans';
+  $('revenusMensuels').value = '3 500';
+  $('rfr').value = '45 000';
+  $('prixFixe').value = '250 000';
+  $('usePTZ').checked = true;
+  calc();
+}
+
+function getTranche(rfr, nbPers, zone){
+  const coef = COEF_FAMILIAL[Math.min(nbPers, 8)] || 3.3;
+  const q = rfr / coef;
+  const s = SEUILS_TRANCHES[zone];
+  if (q <= s.t1) return 1;
+  if (q <= s.t2) return 2;
+  if (q <= s.t3) return 3;
+  return 4;
+}
+
+function calculPTZ(prix, rfr, nbPers, zone){
+  const plafondRevenu = PLAFONDS_REVENUS[zone][Math.min(nbPers, 8)];
+  if (rfr > plafondRevenu) return {eligible:false, raison:"Revenus trop élevés", montant:0, plafondRevenu};
+  const tranche = getTranche(rfr, nbPers, zone);
+  const quotite = QUOTITES[tranche];
+  const plafondOpe = PLAFONDS_OPERATION[zone][Math.min(nbPers, 8)];
+  const baseCalcul = Math.min(prix, plafondOpe);
+  const montant = Math.min(baseCalcul * quotite, 180000);
+  return {eligible:true, montant, tranche, quotite, plafondOpe, baseCalcul, plafondRevenu};
+}
+
+function pmt(capital, tAnnuel, ans){
+  const n = ans * 12, i = tAnnuel / 100 / 12;
+  return i === 0 ? capital / n : capital * i / (1 - Math.pow(1 + i, -n));
+}
+
+function fmtTaux(t){ return t.toString().replace('.', ',') + ' %'; }
+
+let myChart;
+function updateChart(dataN) {
+  const ctx = $('chartCanvas').getContext('2d');
+  if (myChart) myChart.destroy();
+  myChart = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels: ['Prix du bien', 'Frais (notaire, dossier, garantie)', 'PTZ (0%)', 'Emprunt bancaire'],
+      datasets: [{
+        data: [dataN.prix, dataN.frais, dataN.ptz, dataN.emprunt],
+        backgroundColor: ['#1d4ed8', '#f59e0b', '#059669', '#94a3b8'],
+        borderWidth: 0
+      }]
+    },
+    options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'right', labels: { boxWidth: 12, font: {size: 11} } } } }
+  });
+}
+
+function calculBudgetMax(){
+  const revenusMensuels = num('revenusMensuels');
+  const duree = Math.max(10, num('duree'));
+  const apport = num('apport');
+  const nbPers = parseInt($('nbPers').value);
+  const rfr = num('rfr');
+  const zone = $('zone').value;
+  const usePTZ = $('usePTZ').checked;
+  const typeBien = $('typeBien').value;
+
+  NOTAIRE_ANCIEN = (typeBien === 'maison') ? 0.070 : 0.075;
+
+  const mensualiteMax = revenusMensuels * TAUX_ENDETTEMENT;
+  const n = duree * 12;
+  const assMens = ASSURANCE / 100 / 12;
+
+  const iA = TAUX_ANCIEN / 100 / 12;
+  const capA = (iA + assMens) === 0 ? mensualiteMax * n :
+    mensualiteMax * (1 - Math.pow(1 + iA, -n)) / (iA + assMens);
+
+  const iN = TAUX_NEUF / 100 / 12;
+  const capN = (iN + assMens) === 0 ? mensualiteMax * n :
+    mensualiteMax * (1 - Math.pow(1 + iN, -n)) / (iN + assMens);
+
+  const prixMaxA_fin = (capA * (1 - TAUX_GARANTIE) + apport - FRAIS_DOSSIER) / (1 + NOTAIRE_ANCIEN);
+  const prixMaxA_apport = apport / APPORT_MIN_ANCIEN;
+  const budgetAncien = Math.max(0, Math.min(prixMaxA_fin, prixMaxA_apport));
+  
+  const empruntAncien = Math.max(0, budgetAncien * (1 + NOTAIRE_ANCIEN) + FRAIS_DOSSIER + (budgetAncien - apport) * TAUX_GARANTIE - apport);
+  const fraisAncien = budgetAncien * NOTAIRE_ANCIEN + FRAIS_DOSSIER + empruntAncien * TAUX_GARANTIE;
+  const contrainteActiveA = prixMaxA_apport < prixMaxA_fin ? 'apport' : 'capacite';
+
+  let ptzResult = {eligible:false, montant:0, raison:"PTZ désactivé", plafondRevenu:0};
+  let ptzMontant = 0;
+  let budgetNeuf = 0;
+
+  if (usePTZ) {
+    let prixEst = (capN * (1 - TAUX_GARANTIE) + apport - FRAIS_DOSSIER) / (1 + NOTAIRE_NEUF);
+    ptzResult = calculPTZ(prixEst, rfr, nbPers, zone);
+    if (ptzResult.eligible) {
+      ptzMontant = ptzResult.montant;
+      budgetNeuf = (capN * (1 - TAUX_GARANTIE) + apport + ptzMontant - FRAIS_DOSSIER) / (1 + NOTAIRE_NEUF);
+      ptzResult = calculPTZ(budgetNeuf, rfr, nbPers, zone);
+      if (ptzResult.eligible) ptzMontant = ptzResult.montant;
+    }
+  }
+  
+  if (!usePTZ || !ptzResult.eligible) {
+    budgetNeuf = (capN * (1 - TAUX_GARANTIE) + apport - FRAIS_DOSSIER) / (1 + NOTAIRE_NEUF);
+  }
+  
+  budgetNeuf = Math.max(0, budgetNeuf);
+  const empruntNeuf = Math.max(0, budgetNeuf * (1 + NOTAIRE_NEUF) + FRAIS_DOSSIER + (budgetNeuf - apport - ptzMontant) * TAUX_GARANTIE - apport - ptzMontant);
+  const fraisNeuf = budgetNeuf * NOTAIRE_NEUF + FRAIS_DOSSIER + empruntNeuf * TAUX_GARANTIE;
+
+  return {budgetAncien, budgetNeuf, ptzMontant, ptzResult, capA, capN, duree, apport,
+          empruntAncien, empruntNeuf, fraisAncien, fraisNeuf, contrainteActiveA};
+}
+
+function calcFixe() {
+  const prix = num('prixFixe');
+  if (prix <= 0) return;
+  
+  const duree = Math.max(10, num('duree'));
+  const nbPers = parseInt($('nbPers').value);
+  const rfr = num('rfr');
+  const zone = $('zone').value;
+  const usePTZ = $('usePTZ').checked;
+  
+  const notaireA = prix * NOTAIRE_ANCIEN;
+  const apportMinA = prix * 0.10; 
+  const empruntA = Math.max(0, prix - apportMinA);
+  const garantieA = empruntA * TAUX_GARANTIE;
+  const fraisTotauxA = notaireA + FRAIS_DOSSIER + garantieA;
+  const mensA = pmt(empruntA, TAUX_ANCIEN, duree) + empruntA * ASSURANCE / 100 / 12;
+  
+  $('fixeMensA').textContent = eur(mensA);
+  $('fixeDetailA').innerHTML = `
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Prix du bien :</span> <b>${eur(prix)}</b></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Notaire (${Math.round(NOTAIRE_ANCIEN*100)}%) :</span> <span>${eur(notaireA)}</span></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Frais dossier + garantie :</span> <span>${eur(FRAIS_DOSSIER + garantieA)}</span></div>
+    <hr style="margin:10px 0;border:none;border-top:1px solid var(--line)">
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px;color:var(--warn)"><span><b>Apport min. requis :</b></span> <b>${eur(apportMinA)}</b></div>
+    <div style="font-size:.75rem;color:var(--muted);margin-bottom:10px">(Couvre le notaire, les frais et 10% du prix)</div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Emprunt bancaire :</span> <span>${eur(empruntA)}</span></div>
+    <div style="display:flex;justify-content:space-between"><span>Taux :</span> <span>${fmtTaux(TAUX_ANCIEN)}</span></div>
+  `;
+  
+  const notaireN = prix * NOTAIRE_NEUF;
+  let ptz = 0;
+  let ptzRes = {eligible: false};
+  
+  if (usePTZ) {
+    ptzRes = calculPTZ(prix, rfr, nbPers, zone);
+    if (ptzRes.eligible) ptz = ptzRes.montant;
+  }
+  
+  const empruntN = Math.max(0, prix - ptz);
+  const garantieN = empruntN * TAUX_GARANTIE;
+  const apportMinN = notaireN + FRAIS_DOSSIER + garantieN;
+  const mensN = (empruntN > 0 ? pmt(empruntN, TAUX_NEUF, duree) + empruntN * ASSURANCE / 100 / 12 : 0) + (ptz > 0 ? ptz / (duree * 12) : 0);
+  
+  $('fixeMensN').textContent = eur(mensN);
+  $('fixeDetailN').innerHTML = `
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Prix du bien :</span> <b>${eur(prix)}</b></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Notaire (2,5%) :</span> <span>${eur(notaireN)}</span></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Frais dossier + garantie :</span> <span>${eur(FRAIS_DOSSIER + garantieN)}</span></div>
+    <hr style="margin:10px 0;border:none;border-top:1px solid var(--line)">
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px;color:var(--ok)"><span><b>Apport min. requis :</b></span> <b>${eur(apportMinN)}</b></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>PTZ (Prêt à 0%) :</span> <span style="color:var(--ok);font-weight:700">${eur(ptz)}</span></div>
+    <div style="display:flex;justify-content:space-between;margin-bottom:6px"><span>Emprunt bancaire :</span> <span>${eur(empruntN)}</span></div>
+    <div style="display:flex;justify-content:space-between"><span>Taux :</span> <span>${fmtTaux(TAUX_NEUF)}</span></div>
+  `;
+}
+
+function calc(){
+  const r = calculBudgetMax();
+  const usePTZ = $('usePTZ').checked;
+  const duree = Math.max(10, num('duree'));
+
+  $('budgetAncien').textContent = eur(r.budgetAncien);
+  $('budgetNeuf').textContent = eur(r.budgetNeuf);
+  
+  $('stickyBudget').textContent = eur(r.budgetNeuf);
+  $('stickyBar').classList.add('show');
+  $('mainCTA').textContent = `Recevoir mon étude pour ${eur(r.budgetNeuf)} →`;
+
+  let detailA = `Frais (notaire+dossier+garantie) : <b style="color:var(--warn)">${eur(r.fraisAncien)}</b><br>Emprunt : ${eur(r.empruntAncien)}`;
+  if (r.contrainteActiveA === 'apport') detailA += `<br><span style="color:var(--warn);font-size:.75rem">⚠️ Limité par l'apport (10% mini)</span>`;
+  $('detailAncien').innerHTML = detailA;
+
+  if (usePTZ && r.ptzResult.eligible) {
+    $('detailNeuf').innerHTML = `Frais (notaire+dossier+garantie) : <b style="color:var(--warn)">${eur(r.fraisNeuf)}</b><br>+ PTZ : <b style="color:var(--ok)">${eur(r.ptzMontant)}</b><br>Emprunt : ${eur(r.empruntNeuf)}`;
+    $('ptzNeuf').textContent = 'PTZ inclus'; $('ptzNeuf').className = 'ptz-badge';
+    $('alertPTZ').innerHTML = `<div class="alert ok"><i class="fa-solid fa-check-circle"></i> Éligible au PTZ : <b>${eur(r.ptzMontant)}</b> (tranche ${r.ptzResult.tranche}).</div>`;
+    $('ptzDetail').innerHTML = `Montant : ${eur(r.ptzMontant)}<br>Tranche : ${r.ptzResult.tranche}<br>Quotité : ${Math.round(r.ptzResult.quotite*100)} %<br>Plafond opé. : ${eur(r.ptzResult.plafondOpe)}<br>Plafond rev. : ${eur(r.ptzResult.plafondRevenu)}`;
+  } else if (usePTZ && !r.ptzResult.eligible) {
+    $('detailNeuf').innerHTML = `Frais (notaire+dossier+garantie) : <b style="color:var(--warn)">${eur(r.fraisNeuf)}</b><br>Emprunt : ${eur(r.empruntNeuf)}`;
+    $('ptzNeuf').textContent = 'Non éligible'; $('ptzNeuf').className = 'no-ptz';
+    $('alertPTZ').innerHTML = `<div class="alert warn">⚠️ ${r.ptzResult.raison}.</div>`;
+    $('ptzDetail').textContent = 'Non éligible avec ces revenus.';
+  } else {
+    $('detailNeuf').innerHTML = `Frais (notaire+dossier+garantie) : <b style="color:var(--warn)">${eur(r.fraisNeuf)}</b><br>Emprunt : ${eur(r.empruntNeuf)}`;
+    $('ptzNeuf').textContent = 'PTZ désactivé'; $('ptzNeuf').className = 'no-ptz';
+    $('alertPTZ').innerHTML = ''; $('ptzDetail').textContent = 'Activez le PTZ pour voir votre éligibilité.';
+  }
+
+  const mensA = r.empruntAncien > 0 ? pmt(r.empruntAncien, TAUX_ANCIEN, duree) + r.empruntAncien * ASSURANCE / 100 / 12 : 0;
+  const mensN = (r.empruntNeuf > 0 ? pmt(r.empruntNeuf, TAUX_NEUF, duree) + r.empruntNeuf * ASSURANCE / 100 / 12 : 0) + (r.ptzMontant > 0 ? r.ptzMontant / (duree * 12) : 0);
+  $('mensA').textContent = eur(mensA);
+  $('mensN').textContent = eur(mensN);
+
+  const diff = r.budgetNeuf - r.budgetAncien;
+  if (Math.abs(diff) < 1000) $('verdictBudget').innerHTML = "<i class='fa-solid fa-scale-balanced'></i> Les deux options offrent un budget équivalent.";
+  else if (diff > 0) $('verdictBudget').innerHTML = `<i class='fa-solid fa-arrow-trend-up' style='color:var(--ok)'></i> Avec le PTZ, votre budget est supérieur de <b>${eur(diff)}</b> dans le neuf.`;
+  else $('verdictBudget').innerHTML = `<i class='fa-solid fa-arrow-trend-down' style='color:var(--primary)'></i> Votre budget est supérieur de <b>${eur(-diff)}</b> dans l'ancien.`;
+
+  updateChart({ prix: r.budgetNeuf, frais: r.fraisNeuf, ptz: r.ptzMontant, emprunt: r.empruntNeuf });
+  
+  calcFixe();
+}
+
+$('apportRange').addEventListener('input', function() {
+  $('apport').value = this.value;
+  $('apportDisplay').textContent = Number(this.value).toLocaleString('fr-FR') + ' €';
+  calc();
+});
+$('dureeRange').addEventListener('input', function() {
+  $('duree').value = this.value;
+  $('dureeDisplay').textContent = this.value + ' ans';
+  calc();
+});
+$('prixFixe').addEventListener('input', calcFixe);
+
+document.querySelectorAll('#simulateur select, #simulateur input[type=text], #usePTZ').forEach(el => {
+  el.addEventListener('change', calc);
+});
+
+$('yr').textContent = new Date().getFullYear();
+calc();
+
+$('leadForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  const msg = $('msg'), f = e.target;
+  const contactPref = document.querySelector('input[name="contactPref"]:checked').value;
+  const telOk = contactPref === 'email' || (contactPref === 'phone' && f.tel.value.replace(/\D/g,'').length >= 9);
+  const ok = f.nom.value.trim() && /^\S+@\S+\.\S+$/.test(f.email.value) && telOk && $('rgpd').checked;
+  
+  if (!ok){ msg.textContent = "Merci de compléter tous les champs."; msg.style.color = "var(--accent)"; return; }
+  
+  msg.textContent = 'Envoi en cours…'; msg.style.color = "#fff";
+  const r = calculBudgetMax();
+  const payload = { 
+    nom: f.nom.value, 
+    email: f.email.value, 
+    tel: contactPref === 'phone' ? f.tel.value : 'Non renseigné',
+    budget_ancien: Math.round(r.budgetAncien), 
+    budget_neuf: Math.round(r.budgetNeuf), 
+    ptz: Math.round(r.ptzMontant), 
+    source: window.location.href 
+  };
+  
+  try {
+    if (FORM_ENDPOINT.includes("VOTRE_ID")) { await new Promise(r => setTimeout(r, 1000)); console.log("Lead (Démo) :", payload); }
+    else { const resp = await fetch(FORM_ENDPOINT, { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify(payload) }); if (!resp.ok) throw new Error(); }
+    msg.innerHTML = '✅ Merci ! Nous vous recontactons très vite.'; msg.style.color = '#bbf7d0';
+    f.reset(); $('stickyBar').classList.remove('show'); toggleContact();
+  } catch (err) { msg.textContent = "Une erreur est survenue."; msg.style.color = "#fca5a5"; }
+});
+</script>
+</body>
+</html>
